@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<HTML>
+  <head>
+    <style>
+      canvas {
+          display: block;
+          margin: 20px auto;
+          border: 1px solid black;
+          height: 400px;
+          width: 400px;
+      }
+    </style>
+    <script type="text/javascript">
+var width = height = 400;
+var canvas = ctx = false;
+var frameRate = 1/40; // Seconds
+var frameDelay = frameRate * 1000; // ms
+var loopTimer = false;
+
+var ball = {
+            position: {x: width/2, y: 0},
+            velocity: {x: 0, y:0},
+            mass: 0.1, //kg
+            radius: 15, // 1px = 1cm
+};
+var Cd = 0.47; // Dimensionless
+var rho = 1.22; // density of air, kg/m^3
+var A = Math.PI * ball.radius * ball.radius / (100 *100); //frontal area of ball.
+
+
+// setInterval, setTimeout // take 2 args: 1. a fxn, 2. a delay
+
+//setTimeout(function, 50) will wait 50ms, then run function.
+//setInterval(function, 50) will run function every 50 ms
+// use clearInterval to stop the Interval
+
+var loopTimer = false;
+
+var setup = function() {
+  canvas = document.getElementById("canvas");
+  ctx = canvas.getContext("2d");
+
+  loopTimer = setInterval(loop, frameDelay);
+}
+
+var loop = function() {
+  // What does this need to do?
+  // Do physics
+  console.log("Running");
+  var Fx = -0.4 * Cd * A * rho * ball.velocity.x * ball.velocity.x * ball.velocity.x / Math.abs(ball.velocity.x);
+  var Fy = -0.4 * Cd * A * rho * ball.velocity.y * ball.velocity.y * ball.velocity.y / Math.abs(ball.velocity.x);
+    // Drag force: Fd = -1/2 * Cd * A * rho * v.v
+      // Cd = Coefficient of drag
+    // Calculate acceleration  (F = ma)
+    // Integrate to get velocity
+    // Integrate to get position
+    // (at some other point, gravity)
+  // Handle collisions
+  // Draw ball
+
+}
+    </script>
+  </head>
+  <body onload="setup();">
+    <canvas id="canvas" height="400" width="400">Get a better browser!</canvas>
+  </body>
+</HTML>
