@@ -46,14 +46,25 @@ var setup = function() {
 var loop = function() {
   // What does this need to do?
   // Do physics
-  console.log("Running");
-  var Fx = -0.4 * Cd * A * rho * ball.velocity.x * ball.velocity.x * ball.velocity.x / Math.abs(ball.velocity.x);
-  var Fy = -0.4 * Cd * A * rho * ball.velocity.y * ball.velocity.y * ball.velocity.y / Math.abs(ball.velocity.x);
-    // Drag force: Fd = -1/2 * Cd * A * rho * v.v
+    // Drag force: Fd = -1/2 * Cd * A * rho * v * v
       // Cd = Coefficient of drag
+  var Fx = -0.5 * Cd * A * rho * ball.velocity.x * ball.velocity.x * ball.velocity.x / Math.abs(ball.velocity.x);
+  var Fy = -0.5 * Cd * A * rho * ball.velocity.y * ball.velocity.y * ball.velocity.y / Math.abs(ball.velocity.y);
+
+  Fx = (isNaN(Fx) ? 0 : Fx);
+  Fy = (isNaN(Fy) ? 0 : Fy);
+
     // Calculate acceleration  (F = ma)
+  var ax = Fx / ball.mass;
+  var ay = 9.81 + (Fy / ball.mass);
+
     // Integrate to get velocity
+  ball.velocity.x += ax * frameRate;
+  ball.velocity.y += ay * frameRate;
+
     // Integrate to get position
+  ball.position.x += ball.velocity.x * frameRate * 100;
+  ball.position.y += ball.velocity.y * frameRate * 100;
     // (at some other point, gravity)
   // Handle collisions
   // Draw ball
