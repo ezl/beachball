@@ -19,15 +19,35 @@ var loopTimer = false;
 
 var ball = {
             position: {x: width/2, y: 0},
-            velocity: {x: 0, y:0},
+            velocity: {x: 1, y:0},
             mass: 0.1, //kg
             radius: 15, // 1px = 1cm
+            restitution: -0.7,
 };
 var Cd = 0.47; // Dimensionless
 var rho = 1.22; // density of air, kg/m^3
 var A = Math.PI * ball.radius * ball.radius / (100 *100); //frontal area of ball.
+var mouse = { x: 0, y: 0, isDown: false};
 
-
+function getMousePosition(e) {
+  mouse.x = e.pageX - canvas.offsetLeft;
+  mouse.y = e.pageY - canvas.offsetTop;
+}
+var mouseDown = function(e) {
+  if (e.which == 1) {
+    getMousePosition(e);
+    mouse.isDown = true;
+    ball.position.x = mouse.x;
+    ball.position.y = mouse.y;
+  }
+}
+var mouseUp = function(e) {
+  if (e.which == 1) {
+    mouse.isDown = false;
+    ball.velocity.x = (ball.position.x - mouse.x) / 10;
+    ball.velocity.y = (ball.position.y - mouse.y) / 10;
+  }
+}
 // setInterval, setTimeout // take 2 args: 1. a fxn, 2. a delay
 
 //setTimeout(function, 50) will wait 50ms, then run function.
@@ -39,35 +59,56 @@ var loopTimer = false;
 var setup = function() {
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
+
+  canvas.onmousemove = getMousePosition;
+  canvas.onmousedown = mouseDown;
+  canvas.onmouseup = mouseUp;
+
+
   ctx.fillStyle = 'red';
+  ctx.strokeStyle = 'black';
 
   loopTimer = setInterval(loop, frameDelay);
 }
 
 var loop = function() {
   // What does this need to do?
-  // Do physics
-    // Drag force: Fd = -1/2 * Cd * A * rho * v * v
-      // Cd = Coefficient of drag
-  var Fx = -0.5 * Cd * A * rho * ball.velocity.x * ball.velocity.x * ball.velocity.x / Math.abs(ball.velocity.x);
-  var Fy = -0.5 * Cd * A * rho * ball.velocity.y * ball.velocity.y * ball.velocity.y / Math.abs(ball.velocity.y);
+  if (!mouse.isDown) {
+    // Do physics
+      // Drag force: Fd = -1/2 * Cd * A * rho * v * v
+        // Cd = Coefficient of drag
+    var Fx = -0.5 * Cd * A * rho * ball.velocity.x * ball.velocity.x * ball.velocity.x / Math.abs(ball.velocity.x);
+    var Fy = -0.5 * Cd * A * rho * ball.velocity.y * ball.velocity.y * ball.velocity.y / Math.abs(ball.velocity.y);
 
-  Fx = (isNaN(Fx) ? 0 : Fx);
-  Fy = (isNaN(Fy) ? 0 : Fy);
+    Fx = (isNaN(Fx) ? 0 : Fx);
+    Fy = (isNaN(Fy) ? 0 : Fy);
 
-    // Calculate acceleration  (F = ma)
-  var ax = Fx / ball.mass;
-  var ay = 9.81 + (Fy / ball.mass);
+      // Calculate acceleration  (F = ma)
+    var ax = Fx / ball.mass;
+    var ay = 9.81 + (Fy / ball.mass);
 
-    // Integrate to get velocity
-  ball.velocity.x += ax * frameRate;
-  ball.velocity.y += ay * frameRate;
+      // Integrate to get velocity
+    ball.velocity.x += ax * frameRate;
+    ball.velocity.y += ay * frameRate;
 
-    // Integrate to get position
-  ball.position.x += ball.velocity.x * frameRate * 100;
-  ball.position.y += ball.velocity.y * frameRate * 100;
-    // (at some other point, gravity)
+      // Integrate to get position
+    ball.position.x += ball.velocity.x * frameRate * 100;
+    ball.position.y += ball.velocity.y * frameRate * 100;
+      // (at some other point, gravity)
+  }
   // Handle collisions
+  if (ball.position.y > height - ball.radius) {
+    ball.velocity.y *= ball.restitution;
+    ball.position.y = height - ball.radius;
+  }
+  if (ball.position.x > width- ball.radius) {
+    ball.velocity.x *= ball.restitution;
+    ball.position.x = height - ball.radius;
+  }
+  if (ball.position.x < ball.radius) {
+    ball.velocity.x *= ball.restitution;
+    ball.position.x = height - ball.radius;
+  }
 
   // Draw ball
   ctx.clearRect(0, 0, width, height);
@@ -77,6 +118,15 @@ var loop = function() {
 
   ctx.fill();
   ctx.closePath();
+
+  // Draw the slingshot
+  if (mouse.isDown) {
+    ctx.beginPath();
+    ctx.moveTo(ball.position.x, ball.position.y);
+    ctx.lineTo(mouse.x, mouse.y);
+    ctx.stroke();
+    ctx.closePath();
+  }
 
 }
     </script>
