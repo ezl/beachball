@@ -39,6 +39,7 @@ var loopTimer = false;
 var setup = function() {
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
+  ctx.fillStyle = 'red';
 
   loopTimer = setInterval(loop, frameDelay);
 }
@@ -67,7 +68,15 @@ var loop = function() {
   ball.position.y += ball.velocity.y * frameRate * 100;
     // (at some other point, gravity)
   // Handle collisions
+
   // Draw ball
+  ctx.clearRect(0, 0, width, height);
+  ctx.beginPath();
+
+  ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, Math.PI*2, true);
+
+  ctx.fill();
+  ctx.closePath();
 
 }
     </script>
