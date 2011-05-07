@@ -103,11 +103,11 @@ var loop = function() {
   }
   if (ball.position.x > width- ball.radius) {
     ball.velocity.x *= ball.restitution;
-    ball.position.x = height - ball.radius;
+    ball.position.x = width - ball.radius;
   }
   if (ball.position.x < ball.radius) {
     ball.velocity.x *= ball.restitution;
-    ball.position.x = height - ball.radius;
+    ball.position.x = ball.radius;
   }
 
   // Draw ball
